@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Leitor</title>
+</head>
+<body>
+
+  <h1>Painel do Leitor</h1>
+  <span id="nomeUsuario"></span>
+  <button type="button" id="btnSair">Sair</button>
+
+  <p id="mensagem"></p>
+
+  <h2>Livros disponíveis</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Ano</th>
+        <th>Disponível</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaLivros">
+      <tr><td colspan="6">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Meus empréstimos</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Livro</th>
+        <th>Data empréstimo</th>
+        <th>Data prevista</th>
+        <th>Status</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaEmprestimos">
+      <tr><td colspan="5">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <script src="app.js"></script>
+</body>
+</html>
