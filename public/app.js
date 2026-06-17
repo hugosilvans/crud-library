@@ -1,5 +1,7 @@
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = '/api';
+let livrosBibliotecario = [];
+let usuariosBibliotecario = [];
 
 
 function salvarSessao(token, usuario) {
@@ -131,10 +133,18 @@ function inicializarBibliotecario() {
   document.getElementById('btnSair').addEventListener('click', logout);
 
   carregarLivrosBibliotecario();
+  carregarUsuariosBibliotecario();
   carregarEmprestimosBibliotecario();
 
   document.getElementById('formLivro').addEventListener('submit', salvarLivro);
   document.getElementById('btnCancelarEdicao').addEventListener('click', cancelarEdicaoLivro);
+  document.getElementById('formUsuario').addEventListener('submit', salvarUsuario);
+  document.getElementById('btnCancelarUsuario').addEventListener('click', cancelarEdicaoUsuario);
+  document.getElementById('formEmprestimo').addEventListener('submit', salvarEmprestimoBibliotecario);
+
+  const dataPrevista = document.getElementById('emprestimoDataPrevista');
+  dataPrevista.min = hojeMaisDias(1);
+  dataPrevista.value = hojeMaisDias(7);
 }
 
 async function carregarLivrosBibliotecario() {
@@ -147,6 +157,8 @@ async function carregarLivrosBibliotecario() {
   }
 
   const livros = resposta.dados?.livros || resposta.dados || [];
+  livrosBibliotecario = livros;
+  atualizarSelectLivrosEmprestimo();
 
   if (livros.length === 0) {
     tabela.innerHTML = '<tr><td colspan="6">Nenhum livro cadastrado.</td></tr>';
@@ -183,6 +195,7 @@ async function carregarLivrosBibliotecario() {
 
       mostrarMensagem('Livro removido com sucesso.', 'sucesso');
       carregarLivrosBibliotecario();
+      carregarEmprestimosBibliotecario();
     });
 
     tabela.appendChild(linha);
@@ -238,6 +251,167 @@ async function salvarLivro(e) {
   mostrarMensagem(id ? 'Livro atualizado com sucesso.' : 'Livro cadastrado com sucesso.', 'sucesso');
   cancelarEdicaoLivro();
   carregarLivrosBibliotecario();
+  carregarEmprestimosBibliotecario();
+}
+
+async function carregarUsuariosBibliotecario() {
+  const tabela = document.getElementById('tabelaUsuarios');
+  const resposta = await chamarApi('/usuarios');
+
+  if (!resposta.ok) {
+    tabela.innerHTML = '<tr><td colspan="5">Erro ao carregar usuários.</td></tr>';
+    return;
+  }
+
+  const usuarios = resposta.dados?.usuarios || resposta.dados || [];
+  usuariosBibliotecario = usuarios;
+  atualizarSelectLeitoresEmprestimo();
+
+  if (usuarios.length === 0) {
+    tabela.innerHTML = '<tr><td colspan="5">Nenhum usuário cadastrado.</td></tr>';
+    return;
+  }
+
+  tabela.innerHTML = '';
+  usuarios.forEach((usuarioItem) => {
+    const linha = document.createElement('tr');
+    linha.innerHTML = `
+      <td>${usuarioItem.id}</td>
+      <td>${usuarioItem.nome}</td>
+      <td>${usuarioItem.email}</td>
+      <td>${usuarioItem.perfil}</td>
+      <td>
+        <button type="button" data-acao="editar">Editar</button>
+        <button type="button" data-acao="excluir">Excluir</button>
+      </td>
+    `;
+
+    linha.querySelector('[data-acao="editar"]').addEventListener('click', () => {
+      preencherFormularioUsuario(usuarioItem);
+    });
+
+    linha.querySelector('[data-acao="excluir"]').addEventListener('click', async () => {
+      const usuarioLogado = getUsuario();
+      if (usuarioLogado?.id === usuarioItem.id) {
+        mostrarMensagem('Você não pode excluir o próprio usuário logado.', 'erro');
+        return;
+      }
+
+      if (!confirm(`Remover o usuário "${usuarioItem.nome}"?`)) return;
+
+      const respostaExclusao = await chamarApi(`/usuarios/${usuarioItem.id}`, 'DELETE');
+      if (!respostaExclusao.ok) {
+        mostrarMensagem(respostaExclusao.dados?.mensagem || 'Erro ao remover usuário.', 'erro');
+        return;
+      }
+
+      mostrarMensagem('Usuário removido com sucesso.', 'sucesso');
+      carregarUsuariosBibliotecario();
+      carregarEmprestimosBibliotecario();
+    });
+
+    tabela.appendChild(linha);
+  });
+}
+
+function preencherFormularioUsuario(usuarioItem) {
+  document.getElementById('usuarioId').value = usuarioItem.id;
+  document.getElementById('usuarioNome').value = usuarioItem.nome;
+  document.getElementById('usuarioEmail').value = usuarioItem.email;
+  document.getElementById('usuarioSenha').value = '';
+  document.getElementById('usuarioSenha').required = true;
+  document.getElementById('usuarioPerfil').value = usuarioItem.perfil;
+
+  document.getElementById('tituloFormUsuario').textContent = 'Editar usuário';
+  document.getElementById('btnSalvarUsuario').textContent = 'Salvar alterações';
+  document.getElementById('btnCancelarUsuario').style.display = 'inline-block';
+}
+
+function cancelarEdicaoUsuario() {
+  document.getElementById('formUsuario').reset();
+  document.getElementById('usuarioId').value = '';
+  document.getElementById('usuarioSenha').required = true;
+  document.getElementById('tituloFormUsuario').textContent = 'Cadastrar novo usuário';
+  document.getElementById('btnSalvarUsuario').textContent = 'Cadastrar';
+  document.getElementById('btnCancelarUsuario').style.display = 'none';
+}
+
+async function salvarUsuario(e) {
+  e.preventDefault();
+  esconderMensagem();
+
+  const id = document.getElementById('usuarioId').value;
+  const nome = document.getElementById('usuarioNome').value;
+  const email = document.getElementById('usuarioEmail').value;
+  const senha = document.getElementById('usuarioSenha').value;
+  const perfil = document.getElementById('usuarioPerfil').value;
+
+  const corpo = { nome, email, senha, perfil };
+  const resposta = id
+    ? await chamarApi(`/usuarios/${id}`, 'PUT', corpo)
+    : await chamarApi('/usuarios', 'POST', corpo);
+
+  if (!resposta.ok) {
+    mostrarMensagem(resposta.dados?.mensagem || 'Erro ao salvar usuário.', 'erro');
+    return;
+  }
+
+  mostrarMensagem(id ? 'Usuário atualizado com sucesso.' : 'Usuário cadastrado com sucesso.', 'sucesso');
+  cancelarEdicaoUsuario();
+  carregarUsuariosBibliotecario();
+}
+
+function atualizarSelectLivrosEmprestimo() {
+  const select = document.getElementById('emprestimoLivro');
+  if (!select) return;
+
+  const opcoes = livrosBibliotecario
+    .filter((livro) => livro.quantidade_disponivel > 0)
+    .map((livro) => {
+      const texto = `${livro.titulo} - ${livro.autor} (${livro.quantidade_disponivel} disp.)`;
+      return `<option value="${livro.id}">${texto}</option>`;
+    });
+
+  select.innerHTML = '<option value="">Selecione um livro</option>' + opcoes.join('');
+}
+
+function atualizarSelectLeitoresEmprestimo() {
+  const select = document.getElementById('emprestimoLeitor');
+  if (!select) return;
+
+  const opcoes = usuariosBibliotecario
+    .filter((usuarioItem) => usuarioItem.perfil === 'leitor')
+    .map((usuarioItem) => (
+      `<option value="${usuarioItem.id}">${usuarioItem.nome} - ${usuarioItem.email}</option>`
+    ));
+
+  select.innerHTML = '<option value="">Selecione um leitor</option>' + opcoes.join('');
+}
+
+async function salvarEmprestimoBibliotecario(e) {
+  e.preventDefault();
+  esconderMensagem();
+
+  const idLivro = document.getElementById('emprestimoLivro').value;
+  const idLeitor = document.getElementById('emprestimoLeitor').value;
+  const dataDevolucaoPrevista = document.getElementById('emprestimoDataPrevista').value;
+
+  const resposta = await chamarApi('/emprestimos', 'POST', {
+    id_livro: idLivro,
+    id_leitor: idLeitor,
+    data_devolucao_prevista: dataDevolucaoPrevista,
+  });
+
+  if (!resposta.ok) {
+    mostrarMensagem(resposta.dados?.mensagem || 'Erro ao cadastrar empréstimo.', 'erro');
+    return;
+  }
+
+  mostrarMensagem('Empréstimo cadastrado com sucesso.', 'sucesso');
+  document.getElementById('formEmprestimo').reset();
+  document.getElementById('emprestimoDataPrevista').value = hojeMaisDias(7);
+  carregarLivrosBibliotecario();
+  carregarEmprestimosBibliotecario();
 }
 
 async function carregarEmprestimosBibliotecario() {
@@ -260,6 +434,13 @@ async function carregarEmprestimosBibliotecario() {
   emprestimos.forEach((emp) => {
     const linha = document.createElement('tr');
     const podeAprovar = emp.status === 'ativo' || emp.status === 'atrasado' || emp.status === 'pendente';
+    const botoes = [];
+
+    if (podeAprovar) {
+      botoes.push('<button type="button" data-acao="aprovar">Aprovar devolução</button>');
+    }
+
+    botoes.push('<button type="button" data-acao="excluir">Excluir</button>');
 
     linha.innerHTML = `
       <td>${emp.leitor_nome || emp.leitor || '-'}</td>
@@ -267,7 +448,7 @@ async function carregarEmprestimosBibliotecario() {
       <td>${emp.data_emprestimo || '-'}</td>
       <td>${emp.data_devolucao_prevista || '-'}</td>
       <td>${emp.status}</td>
-      <td>${podeAprovar ? '<button type="button" data-acao="aprovar">Aprovar devolução</button>' : '-'}</td>
+      <td>${botoes.join(' ')}</td>
     `;
 
     if (podeAprovar) {
@@ -282,6 +463,20 @@ async function carregarEmprestimosBibliotecario() {
         carregarLivrosBibliotecario();
       });
     }
+
+    linha.querySelector('[data-acao="excluir"]').addEventListener('click', async () => {
+      if (!confirm('Excluir este empréstimo?')) return;
+
+      const respostaExclusao = await chamarApi(`/emprestimos/${emp.id}`, 'DELETE');
+      if (!respostaExclusao.ok) {
+        mostrarMensagem(respostaExclusao.dados?.mensagem || 'Erro ao excluir empréstimo.', 'erro');
+        return;
+      }
+
+      mostrarMensagem('Empréstimo excluído com sucesso.', 'sucesso');
+      carregarEmprestimosBibliotecario();
+      carregarLivrosBibliotecario();
+    });
 
     tabela.appendChild(linha);
   });
@@ -344,6 +539,7 @@ async function carregarLivrosLeitor() {
 
         const resposta2 = await chamarApi('/emprestimos', 'POST', {
           livro_id: livro.id,
+          id_leitor: getUsuario().id,
           data_devolucao_prevista: dataPrevista,
         });
 
@@ -364,7 +560,8 @@ async function carregarLivrosLeitor() {
 
 async function carregarMeusEmprestimos() {
   const tabela = document.getElementById('tabelaEmprestimos');
-  const resposta = await chamarApi('/emprestimos/meus');
+  const usuario = getUsuario();
+  const resposta = await chamarApi(`/emprestimos/meus?id_leitor=${usuario.id}`);
 
   if (!resposta.ok) {
     tabela.innerHTML = '<tr><td colspan="5">Erro ao carregar empréstimos.</td></tr>';

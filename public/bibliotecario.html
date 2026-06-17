@@ -51,6 +51,63 @@
     <button type="button" id="btnCancelarEdicao" style="display:none;">Cancelar edição</button>
   </form>
 
+  <h2>Usuários cadastrados</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Perfil</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaUsuarios">
+      <tr><td colspan="5">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="tituloFormUsuario">Cadastrar novo usuário</h2>
+  <form id="formUsuario">
+    <input type="hidden" id="usuarioId" />
+
+    <label for="usuarioNome">Nome</label>
+    <input type="text" id="usuarioNome" required />
+
+    <label for="usuarioEmail">Email</label>
+    <input type="email" id="usuarioEmail" required />
+
+    <label for="usuarioSenha">Senha</label>
+    <input type="password" id="usuarioSenha" minlength="6" required />
+
+    <label for="usuarioPerfil">Perfil</label>
+    <select id="usuarioPerfil" required>
+      <option value="leitor">Leitor</option>
+      <option value="bibliotecario">Bibliotecário</option>
+    </select>
+
+    <button type="submit" id="btnSalvarUsuario">Cadastrar</button>
+    <button type="button" id="btnCancelarUsuario" style="display:none;">Cancelar edição</button>
+  </form>
+
+  <h2>Novo empréstimo</h2>
+  <form id="formEmprestimo">
+    <label for="emprestimoLivro">Livro</label>
+    <select id="emprestimoLivro" required>
+      <option value="">Carregando livros...</option>
+    </select>
+
+    <label for="emprestimoLeitor">Leitor</label>
+    <select id="emprestimoLeitor" required>
+      <option value="">Carregando leitores...</option>
+    </select>
+
+    <label for="emprestimoDataPrevista">Data de devolução prevista</label>
+    <input type="date" id="emprestimoDataPrevista" required />
+
+    <button type="submit">Cadastrar empréstimo</button>
+  </form>
+
   <h2>Empréstimos</h2>
   <table border="1">
     <thead>
