@@ -9,21 +9,28 @@
 <body>
 
   <h1>Painel do Leitor</h1>
+
+  <!-- O JavaScript coloca aqui o nome do usuario logado. -->
   <span id="nomeUsuario"></span>
+
+  <!-- Botao ligado a funcao logout() no app.js. -->
   <button type="button" id="btnSair">Sair</button>
 
+  <!-- Area de mensagens da pagina. -->
   <p id="mensagem"></p>
 
-  <h2>Livros disponíveis</h2>
+  <h2>Livros disponiveis</h2>
+
+  <!-- Tabela preenchida dinamicamente por carregarLivrosLeitor(). -->
   <table border="1">
     <thead>
       <tr>
         <th>ID</th>
-        <th>Título</th>
+        <th>Titulo</th>
         <th>Autor</th>
         <th>Ano</th>
-        <th>Disponível</th>
-        <th>Ação</th>
+        <th>Disponivel</th>
+        <th>Acao</th>
       </tr>
     </thead>
     <tbody id="tabelaLivros">
@@ -31,15 +38,17 @@
     </tbody>
   </table>
 
-  <h2>Meus empréstimos</h2>
+  <h2>Meus emprestimos</h2>
+
+  <!-- Tabela preenchida dinamicamente por carregarMeusEmprestimos(). -->
   <table border="1">
     <thead>
       <tr>
         <th>Livro</th>
-        <th>Data empréstimo</th>
+        <th>Data emprestimo</th>
         <th>Data prevista</th>
         <th>Status</th>
-        <th>Ação</th>
+        <th>Acao</th>
       </tr>
     </thead>
     <tbody id="tabelaEmprestimos">

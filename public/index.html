@@ -1,8 +1,14 @@
 <!DOCTYPE html>
+<!-- Define que o documento e HTML5 e que o idioma principal da pagina e portugues do Brasil. -->
 <html lang="pt-BR">
 <head>
+  <!-- UTF-8 permite exibir acentos corretamente. -->
   <meta charset="UTF-8" />
+
+  <!-- Faz a pagina se adaptar melhor a telas pequenas, como celulares. -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Importa o arquivo CSS com os estilos visuais. -->
   <link rel="stylesheet" href="style.css">
   <title>Login - Sistema de Biblioteca</title>
 </head>
@@ -10,11 +16,14 @@
 
   <h1>Sistema de Biblioteca</h1>
 
+  <!-- Botoes usados pelo JavaScript para alternar entre login e registro. -->
   <button type="button" id="tabLogin">Entrar</button>
   <button type="button" id="tabRegistro">Registrar</button>
 
+  <!-- Area onde o JavaScript mostra mensagens de erro ou sucesso. -->
   <p id="mensagem"></p>
 
+  <!-- Formulario de login. O JavaScript escuta o submit deste form. -->
   <form id="formLogin">
     <h2>Entrar</h2>
 
@@ -27,6 +36,7 @@
     <button type="submit">Entrar</button>
   </form>
 
+  <!-- Formulario de registro. Comeca escondido e aparece ao clicar em Registrar. -->
   <form id="formRegistro" style="display:none;">
     <h2>Registrar</h2>
 
@@ -42,12 +52,13 @@
     <label for="registroPerfil">Perfil</label>
     <select id="registroPerfil">
       <option value="leitor">Leitor</option>
-      <option value="bibliotecario">Bibliotecário</option>
+      <option value="bibliotecario">Bibliotecario</option>
     </select>
 
     <button type="submit">Registrar</button>
   </form>
 
+  <!-- Importa o JavaScript no fim para garantir que o HTML ja exista quando ele rodar. -->
   <script src="app.js"></script>
 </body>
 </html>

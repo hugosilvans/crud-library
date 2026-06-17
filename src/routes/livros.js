@@ -2,38 +2,46 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Listar todos os livros
+// Rota GET /api/livros
+// Lista todos os livros cadastrados no banco.
 router.get('/', async (req, res) => {
     try {
 
+        // O AS troca id_livro por id na resposta, deixando o JSON mais simples.
         const [livros] = await pool.query(
             'SELECT id_livro AS id, titulo, autor, ano_publicacao, quantidade_disponivel FROM livro'
         );
 
+        // Envia a lista de livros para o frontend.
         res.json({ livros });
 
     } catch (err) {
+        // Se houver erro de banco ou servidor, devolve uma mensagem generica.
         res.status(500).json({
             mensagem: 'Erro ao buscar livros.'
         });
     }
 });
 
-// Buscar livro por ID
+// Rota GET /api/livros/:id
+// Busca um unico livro pelo ID informado na URL.
 router.get('/:id', async (req, res) => {
     try {
 
+        // req.params.id pega o valor que veio no lugar de :id.
         const [livros] = await pool.query(
             'SELECT id_livro AS id, titulo, autor, ano_publicacao, quantidade_disponivel FROM livro WHERE id_livro = ?',
             [req.params.id]
         );
 
+        // Se a consulta voltou vazia, nao existe livro com esse ID.
         if (livros.length === 0) {
             return res.status(404).json({
-                mensagem: 'Livro não encontrado.'
+                mensagem: 'Livro nao encontrado.'
             });
         }
 
+        // Como a busca e por ID, retorna somente o primeiro item.
         res.json(livros[0]);
 
     } catch (err) {
@@ -43,10 +51,12 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Cadastrar livro
+// Rota POST /api/livros
+// Cadastra um novo livro usando os dados enviados pelo formulario.
 router.post('/', async (req, res) => {
     try {
 
+        // Extrai do corpo da requisicao os campos necessarios.
         const {
             titulo,
             autor,
@@ -54,6 +64,7 @@ router.post('/', async (req, res) => {
             quantidade_disponivel
         } = req.body;
 
+        // Insere uma nova linha na tabela livro.
         await pool.query(
             'INSERT INTO livro (titulo, autor, ano_publicacao, quantidade_disponivel) VALUES (?, ?, ?, ?)',
             [titulo, autor, ano_publicacao, quantidade_disponivel]
@@ -70,10 +81,12 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Atualizar livro
+// Rota PUT /api/livros/:id
+// Atualiza os dados de um livro existente.
 router.put('/:id', async (req, res) => {
     try {
 
+        // Recebe os novos valores enviados pelo frontend.
         const {
             titulo,
             autor,
@@ -81,6 +94,7 @@ router.put('/:id', async (req, res) => {
             quantidade_disponivel
         } = req.body;
 
+        // Atualiza a linha cujo id_livro e igual ao parametro da URL.
         await pool.query(
             'UPDATE livro SET titulo = ?, autor = ?, ano_publicacao = ?, quantidade_disponivel = ? WHERE id_livro = ?',
             [
@@ -103,10 +117,12 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Excluir livro
+// Rota DELETE /api/livros/:id
+// Remove um livro pelo ID.
 router.delete('/:id', async (req, res) => {
     try {
 
+        // Deleta o registro da tabela livro.
         await pool.query(
             'DELETE FROM livro WHERE id_livro = ?',
             [req.params.id]
@@ -123,4 +139,5 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Exporta as rotas de livros para o roteador principal.
 module.exports = router;

@@ -4,26 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
-  <title>Painel do Bibliotecário</title>
+  <title>Painel do Bibliotecario</title>
 </head>
 <body>
 
-  <h1>Painel do Bibliotecário</h1>
+  <h1>Painel do Bibliotecario</h1>
+
+  <!-- O JavaScript coloca aqui o nome do usuario logado. -->
   <span id="nomeUsuario"></span>
   <button type="button" id="btnSair">Sair</button>
 
+  <!-- Area usada para mensagens de erro e sucesso. -->
   <p id="mensagem"></p>
 
   <h2>Livros cadastrados</h2>
+
+  <!-- Tabela preenchida pela funcao carregarLivrosBibliotecario(). -->
   <table border="1">
     <thead>
       <tr>
         <th>ID</th>
-        <th>Título</th>
+        <th>Titulo</th>
         <th>Autor</th>
         <th>Ano</th>
-        <th>Disponível</th>
-        <th>Ações</th>
+        <th>Disponivel</th>
+        <th>Acoes</th>
       </tr>
     </thead>
     <tbody id="tabelaLivros">
@@ -32,26 +37,31 @@
   </table>
 
   <h2 id="tituloFormLivro">Cadastrar novo livro</h2>
+
+  <!-- Formulario usado tanto para cadastrar quanto para editar livros. -->
   <form id="formLivro">
+    <!-- Campo escondido: vazio significa cadastro; preenchido significa edicao. -->
     <input type="hidden" id="livroId" />
 
-    <label for="livroTitulo">Título</label>
+    <label for="livroTitulo">Titulo</label>
     <input type="text" id="livroTitulo" required />
 
     <label for="livroAutor">Autor</label>
     <input type="text" id="livroAutor" required />
 
-    <label for="livroAno">Ano de publicação</label>
+    <label for="livroAno">Ano de publicacao</label>
     <input type="number" id="livroAno" />
 
-    <label for="livroQuantidade">Quantidade disponível</label>
+    <label for="livroQuantidade">Quantidade disponivel</label>
     <input type="number" id="livroQuantidade" min="0" required />
 
     <button type="submit" id="btnSalvarLivro">Cadastrar</button>
-    <button type="button" id="btnCancelarEdicao" style="display:none;">Cancelar edição</button>
+    <button type="button" id="btnCancelarEdicao" style="display:none;">Cancelar edicao</button>
   </form>
 
-  <h2>Usuários cadastrados</h2>
+  <h2>Usuarios cadastrados</h2>
+
+  <!-- Tabela preenchida pela funcao carregarUsuariosBibliotecario(). -->
   <table border="1">
     <thead>
       <tr>
@@ -59,7 +69,7 @@
         <th>Nome</th>
         <th>Email</th>
         <th>Perfil</th>
-        <th>Ações</th>
+        <th>Acoes</th>
       </tr>
     </thead>
     <tbody id="tabelaUsuarios">
@@ -67,7 +77,9 @@
     </tbody>
   </table>
 
-  <h2 id="tituloFormUsuario">Cadastrar novo usuário</h2>
+  <h2 id="tituloFormUsuario">Cadastrar novo usuario</h2>
+
+  <!-- Formulario usado tanto para cadastrar quanto para editar usuarios. -->
   <form id="formUsuario">
     <input type="hidden" id="usuarioId" />
 
@@ -83,14 +95,16 @@
     <label for="usuarioPerfil">Perfil</label>
     <select id="usuarioPerfil" required>
       <option value="leitor">Leitor</option>
-      <option value="bibliotecario">Bibliotecário</option>
+      <option value="bibliotecario">Bibliotecario</option>
     </select>
 
     <button type="submit" id="btnSalvarUsuario">Cadastrar</button>
-    <button type="button" id="btnCancelarUsuario" style="display:none;">Cancelar edição</button>
+    <button type="button" id="btnCancelarUsuario" style="display:none;">Cancelar edicao</button>
   </form>
 
-  <h2>Novo empréstimo</h2>
+  <h2>Novo emprestimo</h2>
+
+  <!-- Formulario para criar emprestimos escolhendo livro, leitor e data prevista. -->
   <form id="formEmprestimo">
     <label for="emprestimoLivro">Livro</label>
     <select id="emprestimoLivro" required>
@@ -102,22 +116,24 @@
       <option value="">Carregando leitores...</option>
     </select>
 
-    <label for="emprestimoDataPrevista">Data de devolução prevista</label>
+    <label for="emprestimoDataPrevista">Data de devolucao prevista</label>
     <input type="date" id="emprestimoDataPrevista" required />
 
-    <button type="submit">Cadastrar empréstimo</button>
+    <button type="submit">Cadastrar emprestimo</button>
   </form>
 
-  <h2>Empréstimos</h2>
+  <h2>Emprestimos</h2>
+
+  <!-- Tabela preenchida pela funcao carregarEmprestimosBibliotecario(). -->
   <table border="1">
     <thead>
       <tr>
         <th>Leitor</th>
         <th>Livro</th>
-        <th>Data empréstimo</th>
+        <th>Data emprestimo</th>
         <th>Data prevista</th>
         <th>Status</th>
-        <th>Ação</th>
+        <th>Acao</th>
       </tr>
     </thead>
     <tbody id="tabelaEmprestimos">

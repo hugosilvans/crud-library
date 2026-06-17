@@ -1,4 +1,6 @@
-/* RESET */
+/* RESET
+   Remove margens/paddings padrao do navegador e padroniza o calculo de largura.
+   box-sizing:border-box faz width incluir padding e borda, facilitando o layout. */
 *{
     margin:0;
     padding:0;
@@ -6,13 +8,15 @@
     font-family:'Segoe UI', sans-serif;
 }
 
+/* Estilo geral da pagina. */
 body{
     background:#eef2f7;
     color:#333;
     padding:30px;
 }
 
-/* CABEÇALHO */
+/* CABECALHO
+   h1 e o titulo principal de cada tela. */
 h1{
     color:#1e3a5f;
     margin-bottom:20px;
@@ -20,19 +24,23 @@ h1{
     padding-left:15px;
 }
 
+/* h2 separa as secoes, como livros, usuarios e emprestimos. */
 h2{
     color:#2c5282;
     margin:25px 0 15px;
 }
 
-/* USUÁRIO */
+/* USUARIO
+   Mostra o nome do usuario logado no topo dos paineis. */
 #nomeUsuario{
     font-weight:bold;
     color:#1e3a5f;
     margin-right:15px;
 }
 
-/* MENSAGENS */
+/* MENSAGENS
+   O paragrafo #mensagem comeca escondido.
+   O JavaScript altera display e texto quando precisa mostrar erro ou sucesso. */
 #mensagem{
     margin:15px 0;
     padding:12px;
@@ -40,7 +48,20 @@ h2{
     display:none;
 }
 
-/* FORMULÁRIOS */
+/* Classe adicionada pelo JavaScript quando a mensagem e de sucesso. */
+.mensagem.sucesso{
+    background:#d1fae5;
+    color:#065f46;
+}
+
+/* Mensagens sem a classe sucesso sao tratadas como erro. */
+.mensagem{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* FORMULARIOS
+   Aplica o visual de caixa branca aos formularios de login, cadastro e CRUD. */
 form{
     background:#fff;
     padding:25px;
@@ -49,6 +70,7 @@ form{
     margin-bottom:30px;
 }
 
+/* Labels ficam em bloco para aparecerem acima dos campos. */
 label{
     display:block;
     margin-top:15px;
@@ -56,6 +78,7 @@ label{
     font-weight:600;
 }
 
+/* Inputs e selects ocupam a largura toda do formulario. */
 input,
 select{
     width:100%;
@@ -65,6 +88,7 @@ select{
     transition:.3s;
 }
 
+/* :focus define o visual quando o usuario clica ou navega ate o campo. */
 input:focus,
 select:focus{
     outline:none;
@@ -72,7 +96,8 @@ select:focus{
     box-shadow:0 0 8px rgba(44,82,130,.2);
 }
 
-/* BOTÕES */
+/* BOTOES
+   Estilo base de todos os botoes do sistema. */
 button{
     background:#2c5282;
     color:#fff;
@@ -86,11 +111,13 @@ button{
     font-weight:600;
 }
 
+/* Pequeno efeito visual quando o mouse passa por cima do botao. */
 button:hover{
     transform:translateY(-2px);
     box-shadow:0 4px 10px rgba(0,0,0,.15);
 }
 
+/* Cor especifica para o botao de sair. */
 #btnSair{
     background:#dc3545;
 }
@@ -99,7 +126,8 @@ button:hover{
     background:#b02a37;
 }
 
-/* TABELAS */
+/* TABELAS
+   border-collapse junta as bordas das celulas e deixa a tabela mais limpa. */
 table{
     width:100%;
     border-collapse:collapse;
@@ -108,29 +136,36 @@ table{
     overflow:hidden;
     box-shadow:0 4px 15px rgba(0,0,0,.08);
     margin-bottom:30px;
+    display:block;
+    overflow-x:auto;
 }
 
+/* Cabecalho escuro das tabelas. */
 thead{
     background:#1e3a5f;
     color:white;
 }
 
+/* Celulas de titulo. */
 th{
     padding:15px;
     text-align:center;
 }
 
+/* Celulas de dados. */
 td{
     padding:12px;
     text-align:center;
     border-bottom:1px solid #e5e7eb;
 }
 
+/* Destaca a linha quando o usuario passa o mouse. */
 tbody tr:hover{
     background:#f8fafc;
 }
 
-/* LOGIN */
+/* LOGIN
+   Limita a largura dos formularios da tela inicial para ficarem centralizados. */
 #formLogin,
 #formRegistro{
     max-width:500px;
@@ -142,13 +177,8 @@ tbody tr:hover{
     margin-bottom:15px;
 }
 
-/* SCROLL HORIZONTAL */
-table{
-    display:block;
-    overflow-x:auto;
-}
-
-/* RESPONSIVO */
+/* RESPONSIVO
+   Regras aplicadas quando a tela tem no maximo 768px de largura. */
 @media(max-width:768px){
 
     body{
@@ -163,6 +193,7 @@ table{
         padding:20px;
     }
 
+    /* Em telas pequenas, botoes ocupam a largura toda para facilitar o toque. */
     button{
         width:100%;
         margin-top:10px;
