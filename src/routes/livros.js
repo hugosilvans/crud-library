@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Listar todos os livros
 router.get('/', async (req, res) => {
     try {
 
@@ -19,7 +18,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Buscar livro por ID
 router.get('/:id', async (req, res) => {
     try {
 
@@ -43,7 +41,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Cadastrar livro
 router.post('/', async (req, res) => {
     try {
 
@@ -70,7 +67,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Atualizar livro
 router.put('/:id', async (req, res) => {
     try {
 
@@ -103,7 +99,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Excluir livro
 router.delete('/:id', async (req, res) => {
     try {
 

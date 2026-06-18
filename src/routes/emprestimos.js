@@ -66,7 +66,6 @@ async function finalizarEmprestimo(idEmprestimo) {
     }
 }
 
-// Listar todos os empréstimos
 router.get('/', async (req, res) => {
     try {
         const [emprestimos] = await pool.query(`${SELECT_EMPRESTIMOS} ORDER BY e.id_emprestimo DESC`);
@@ -78,7 +77,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Listar empréstimos de um leitor
 router.get('/meus', async (req, res) => {
     try {
         const idLeitor = req.query.id_leitor || req.query.usuario_id;
@@ -102,7 +100,6 @@ router.get('/meus', async (req, res) => {
     }
 });
 
-// Buscar empréstimo por ID
 router.get('/:id', async (req, res) => {
     try {
         const [emprestimos] = await pool.query(
@@ -124,7 +121,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Cadastrar empréstimo
 router.post('/', async (req, res) => {
     let conn;
 
@@ -200,7 +196,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Atualizar empréstimo
 router.put('/:id', async (req, res) => {
     try {
         const {
@@ -247,7 +242,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Solicitar devolução pelo leitor
 router.put('/:id/solicitar-devolucao', async (req, res) => {
     try {
         const resultado = await finalizarEmprestimo(req.params.id);
@@ -261,7 +255,6 @@ router.put('/:id/solicitar-devolucao', async (req, res) => {
     }
 });
 
-// Aprovar devolução pelo bibliotecário
 router.put('/:id/aprovar-devolucao', async (req, res) => {
     try {
         const resultado = await finalizarEmprestimo(req.params.id);
@@ -275,7 +268,6 @@ router.put('/:id/aprovar-devolucao', async (req, res) => {
     }
 });
 
-// Excluir empréstimo
 router.delete('/:id', async (req, res) => {
     let conn;
 

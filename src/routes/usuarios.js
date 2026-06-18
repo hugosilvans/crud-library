@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Listar usuários
 router.get('/', async (req, res) => {
     try {
 
@@ -20,7 +19,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Buscar usuário por ID
 router.get('/:id', async (req, res) => {
     try {
 
@@ -45,7 +43,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Cadastrar usuário
 router.post('/', async (req, res) => {
     try {
 
@@ -68,7 +65,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Atualizar usuário
 router.put('/:id', async (req, res) => {
     try {
 
@@ -91,7 +87,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Excluir usuário
 router.delete('/:id', async (req, res) => {
     try {
 
