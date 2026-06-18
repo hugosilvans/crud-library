@@ -48,6 +48,12 @@ VALUES
 ('Harry Potter e a Pedra Filosofal', 'J.K. Rowling', 1997, 10),
 ('Capitães da Areia', 'Jorge Amado', 1937, 6);
 
-
+INSERT INTO emprestimo
+(id_livro, id_leitor, data_emprestimo, data_devolucao_prevista, data_devolucao_real, status)
+VALUES
+(1, 2, '2026-06-10', '2026-06-24', NULL, 'ativo'),
+(2, 3, '2026-05-01', '2026-05-15', '2026-05-13', 'devolvido'),
+(4, 4, '2026-05-20', '2026-06-03', NULL, 'atrasado'),
+(6, 5, '2026-06-15', '2026-06-29', NULL, 'ativo');
 
   
