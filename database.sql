@@ -40,7 +40,7 @@ VALUES
 
 INSERT INTO livro (titulo, autor, ano_publicacao, quantidade_disponivel)
 VALUES 
-('O Pequeno Príncipe', 'Antoine de Saint-Exupéry', 1943, 3);
+('O Pequeno Príncipe', 'Antoine de Saint-Exupéry', 1943, 3),
 ('Dom Casmurro', 'Machado de Assis', 1899, 5),
 ('A Hora da Estrela', 'Clarice Lispector', 1977, 2),
 ('O Senhor dos Anéis', 'J.R.R. Tolkien', 1954, 5),
