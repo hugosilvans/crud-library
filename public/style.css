@@ -1,151 +1,150 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-body{
-    background:#eef2f7;
-    color:#333;
-    padding:30px;
+body {
+  background: #eef2f7;
+  color: #333;
+  padding: 30px;
 }
-h1{
-    color:#1e3a5f;
-    margin-bottom:20px;
-    border-left:6px solid #f4b400;
-    padding-left:15px;
-}
-
-h2{
-    color:#2c5282;
-    margin:25px 0 15px;
-}
-#nomeUsuario{
-    font-weight:bold;
-    color:#1e3a5f;
-    margin-right:15px;
-}
-#mensagem{
-    margin:15px 0;
-    padding:12px;
-    border-radius:8px;
-    display:none;
-}
-form{
-    background:#fff;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-    margin-bottom:30px;
+h1 {
+  color: #1e3a5f;
+  margin-bottom: 20px;
+  border-left: 6px solid #f4b400;
+  padding-left: 15px;
 }
 
-label{
-    display:block;
-    margin-top:15px;
-    margin-bottom:5px;
-    font-weight:600;
+h2 {
+  color: #2c5282;
+  margin: 25px 0 15px;
+}
+#nomeUsuario {
+  font-weight: bold;
+  color: #1e3a5f;
+  margin-right: 15px;
+}
+#mensagem {
+  margin: 15px 0;
+  padding: 12px;
+  border-radius: 8px;
+  display: none;
+}
+form {
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: 600;
 }
 
 input,
-select{
-    width:100%;
-    padding:12px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
-    transition:.3s;
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  transition: 0.3s;
 }
 
 input:focus,
-select:focus{
-    outline:none;
-    border-color:#2c5282;
-    box-shadow:0 0 8px rgba(44,82,130,.2);
+select:focus {
+  outline: none;
+  border-color: #2c5282;
+  box-shadow: 0 0 8px rgba(44, 82, 130, 0.2);
 }
-button{
-    background:#2c5282;
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    padding:10px 18px;
-    cursor:pointer;
-    transition:.3s;
-    margin-top:10px;
-    margin-right:5px;
-    font-weight:600;
-}
-
-button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 4px 10px rgba(0,0,0,.15);
+button {
+  background: #2c5282;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+  margin-right: 5px;
+  font-weight: 600;
 }
 
-#btnSair{
-    background:#dc3545;
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-#btnSair:hover{
-    background:#b02a37;
-}
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#fff;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-    margin-bottom:30px;
+#btnSair {
+  background: #dc3545;
 }
 
-thead{
-    background:#1e3a5f;
-    color:white;
+#btnSair:hover {
+  background: #b02a37;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
 }
 
-th{
-    padding:15px;
-    text-align:center;
+thead {
+  background: #1e3a5f;
+  color: white;
 }
 
-td{
-    padding:12px;
-    text-align:center;
-    border-bottom:1px solid #e5e7eb;
+th {
+  padding: 15px;
+  text-align: center;
 }
 
-tbody tr:hover{
-    background:#f8fafc;
+td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
 }
 #formLogin,
-#formRegistro{
-    max-width:500px;
-    margin:20px auto;
+#formRegistro {
+  max-width: 500px;
+  margin: 20px auto;
 }
 
 #tabLogin,
-#tabRegistro{
-    margin-bottom:15px;
+#tabRegistro {
+  margin-bottom: 15px;
 }
-table{
-    display:block;
-    overflow-x:auto;
+table {
+  display: block;
+  overflow-x: auto;
 }
-@media(max-width:768px){
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
 
-    body{
-        padding:15px;
-    }
+  h1 {
+    font-size: 24px;
+  }
 
-    h1{
-        font-size:24px;
-    }
+  form {
+    padding: 20px;
+  }
 
-    form{
-        padding:20px;
-    }
-
-    button{
-        width:100%;
-        margin-top:10px;
-    }
+  button {
+    width: 100%;
+    margin-top: 10px;
+  }
 }

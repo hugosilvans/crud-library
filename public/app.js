@@ -1,8 +1,25 @@
+// Datas do formulário usam o calendário local, sem deslocamento de fuso horário.
+function hojeMaisDias(dias) {
+  const data = new Date();
+  data.setDate(data.getDate() + dias);
+  return [
+    data.getFullYear(),
+    String(data.getMonth() + 1).padStart(2, '0'),
+    String(data.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+// Valores recebidos da API são texto, não HTML confiável.
+function escapeHtml(valor) {
+  return String(valor ?? '').replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+  );
+}
 
 const BASE_URL = '/api';
 let livrosBibliotecario = [];
 let usuariosBibliotecario = [];
-
 
 function salvarSessao(token, usuario) {
   localStorage.setItem('token', token);
@@ -18,7 +35,12 @@ function getUsuario() {
   return dados ? JSON.parse(dados) : null;
 }
 
-function logout() {
+async function logout() {
+  try {
+    await chamarApi('/auth/logout', 'POST');
+  } catch (erro) {
+    /* A limpeza local também funciona sem rede. */
+  }
   localStorage.removeItem('token');
   localStorage.removeItem('usuario');
   window.location.href = 'index.html';
@@ -32,7 +54,17 @@ async function chamarApi(caminho, metodo = 'GET', corpo = null) {
   const opcoes = { method: metodo, headers };
   if (corpo) opcoes.body = JSON.stringify(corpo);
 
-  const resposta = await fetch(BASE_URL + caminho, opcoes);
+  let resposta;
+  try {
+    resposta = await fetch(BASE_URL + caminho, opcoes);
+  } catch (erro) {
+    return { ok: false, dados: { mensagem: 'Servidor indisponível. Tente novamente.' } };
+  }
+  if (resposta.status === 401 && !caminho.startsWith('/auth/')) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = 'index.html';
+  }
   let dados = null;
   try {
     dados = await resposta.json();
@@ -121,7 +153,6 @@ function inicializarLogin() {
   });
 }
 
-
 function inicializarBibliotecario() {
   const usuario = getUsuario();
   if (!usuario || usuario.perfil !== 'bibliotecario') {
@@ -140,7 +171,9 @@ function inicializarBibliotecario() {
   document.getElementById('btnCancelarEdicao').addEventListener('click', cancelarEdicaoLivro);
   document.getElementById('formUsuario').addEventListener('submit', salvarUsuario);
   document.getElementById('btnCancelarUsuario').addEventListener('click', cancelarEdicaoUsuario);
-  document.getElementById('formEmprestimo').addEventListener('submit', salvarEmprestimoBibliotecario);
+  document
+    .getElementById('formEmprestimo')
+    .addEventListener('submit', salvarEmprestimoBibliotecario);
 
   const dataPrevista = document.getElementById('emprestimoDataPrevista');
   dataPrevista.min = hojeMaisDias(1);
@@ -169,11 +202,11 @@ async function carregarLivrosBibliotecario() {
   livros.forEach((livro) => {
     const linha = document.createElement('tr');
     linha.innerHTML = `
-      <td>${livro.id}</td>
-      <td>${livro.titulo}</td>
-      <td>${livro.autor}</td>
-      <td>${livro.ano_publicacao ?? '-'}</td>
-      <td>${livro.quantidade_disponivel}</td>
+      <td>${escapeHtml(livro.id)}</td>
+      <td>${escapeHtml(livro.titulo)}</td>
+      <td>${escapeHtml(livro.autor)}</td>
+      <td>${escapeHtml(livro.ano_publicacao ?? '-')}</td>
+      <td>${escapeHtml(livro.quantidade_disponivel)}</td>
       <td>
         <button type="button" data-acao="editar">Editar</button>
         <button type="button" data-acao="excluir">Excluir</button>
@@ -185,9 +218,9 @@ async function carregarLivrosBibliotecario() {
     });
 
     linha.querySelector('[data-acao="excluir"]').addEventListener('click', async () => {
-      if (!confirm(`Remover o livro "${livro.titulo}"?`)) return;
+      if (!confirm(`Remover o livro "${escapeHtml(livro.titulo)}"?`)) return;
 
-      const respostaExclusao = await chamarApi(`/livros/${livro.id}`, 'DELETE');
+      const respostaExclusao = await chamarApi(`/livros/${escapeHtml(livro.id)}`, 'DELETE');
       if (!respostaExclusao.ok) {
         mostrarMensagem(respostaExclusao.dados?.mensagem || 'Erro ao remover livro.', 'erro');
         return;
@@ -248,7 +281,10 @@ async function salvarLivro(e) {
     return;
   }
 
-  mostrarMensagem(id ? 'Livro atualizado com sucesso.' : 'Livro cadastrado com sucesso.', 'sucesso');
+  mostrarMensagem(
+    id ? 'Livro atualizado com sucesso.' : 'Livro cadastrado com sucesso.',
+    'sucesso',
+  );
   cancelarEdicaoLivro();
   carregarLivrosBibliotecario();
   carregarEmprestimosBibliotecario();
@@ -276,10 +312,10 @@ async function carregarUsuariosBibliotecario() {
   usuarios.forEach((usuarioItem) => {
     const linha = document.createElement('tr');
     linha.innerHTML = `
-      <td>${usuarioItem.id}</td>
-      <td>${usuarioItem.nome}</td>
-      <td>${usuarioItem.email}</td>
-      <td>${usuarioItem.perfil}</td>
+      <td>${escapeHtml(usuarioItem.id)}</td>
+      <td>${escapeHtml(usuarioItem.nome)}</td>
+      <td>${escapeHtml(usuarioItem.email)}</td>
+      <td>${escapeHtml(usuarioItem.perfil)}</td>
       <td>
         <button type="button" data-acao="editar">Editar</button>
         <button type="button" data-acao="excluir">Excluir</button>
@@ -297,9 +333,9 @@ async function carregarUsuariosBibliotecario() {
         return;
       }
 
-      if (!confirm(`Remover o usuário "${usuarioItem.nome}"?`)) return;
+      if (!confirm(`Remover o usuário "${escapeHtml(usuarioItem.nome)}"?`)) return;
 
-      const respostaExclusao = await chamarApi(`/usuarios/${usuarioItem.id}`, 'DELETE');
+      const respostaExclusao = await chamarApi(`/usuarios/${escapeHtml(usuarioItem.id)}`, 'DELETE');
       if (!respostaExclusao.ok) {
         mostrarMensagem(respostaExclusao.dados?.mensagem || 'Erro ao remover usuário.', 'erro');
         return;
@@ -356,7 +392,10 @@ async function salvarUsuario(e) {
     return;
   }
 
-  mostrarMensagem(id ? 'Usuário atualizado com sucesso.' : 'Usuário cadastrado com sucesso.', 'sucesso');
+  mostrarMensagem(
+    id ? 'Usuário atualizado com sucesso.' : 'Usuário cadastrado com sucesso.',
+    'sucesso',
+  );
   cancelarEdicaoUsuario();
   carregarUsuariosBibliotecario();
 }
@@ -368,8 +407,8 @@ function atualizarSelectLivrosEmprestimo() {
   const opcoes = livrosBibliotecario
     .filter((livro) => livro.quantidade_disponivel > 0)
     .map((livro) => {
-      const texto = `${livro.titulo} - ${livro.autor} (${livro.quantidade_disponivel} disp.)`;
-      return `<option value="${livro.id}">${texto}</option>`;
+      const texto = `${escapeHtml(livro.titulo)} - ${escapeHtml(livro.autor)} (${escapeHtml(livro.quantidade_disponivel)} disp.)`;
+      return `<option value="${escapeHtml(livro.id)}">${escapeHtml(texto)}</option>`;
     });
 
   select.innerHTML = '<option value="">Selecione um livro</option>' + opcoes.join('');
@@ -381,9 +420,10 @@ function atualizarSelectLeitoresEmprestimo() {
 
   const opcoes = usuariosBibliotecario
     .filter((usuarioItem) => usuarioItem.perfil === 'leitor')
-    .map((usuarioItem) => (
-      `<option value="${usuarioItem.id}">${usuarioItem.nome} - ${usuarioItem.email}</option>`
-    ));
+    .map(
+      (usuarioItem) =>
+        `<option value="${escapeHtml(usuarioItem.id)}">${escapeHtml(usuarioItem.nome)} - ${escapeHtml(usuarioItem.email)}</option>`,
+    );
 
   select.innerHTML = '<option value="">Selecione um leitor</option>' + opcoes.join('');
 }
@@ -433,7 +473,8 @@ async function carregarEmprestimosBibliotecario() {
   tabela.innerHTML = '';
   emprestimos.forEach((emp) => {
     const linha = document.createElement('tr');
-    const podeAprovar = emp.status === 'ativo' || emp.status === 'atrasado' || emp.status === 'pendente';
+    const podeAprovar =
+      emp.status === 'ativo' || emp.status === 'atrasado' || emp.status === 'pendente';
     const botoes = [];
 
     if (podeAprovar) {
@@ -443,19 +484,25 @@ async function carregarEmprestimosBibliotecario() {
     botoes.push('<button type="button" data-acao="excluir">Excluir</button>');
 
     linha.innerHTML = `
-      <td>${emp.leitor_nome || emp.leitor || '-'}</td>
-      <td>${emp.livro_titulo || emp.livro || '-'}</td>
-      <td>${emp.data_emprestimo || '-'}</td>
-      <td>${emp.data_devolucao_prevista || '-'}</td>
-      <td>${emp.status}</td>
+      <td>${escapeHtml(emp.leitor_nome || emp.leitor || '-')}</td>
+      <td>${escapeHtml(emp.livro_titulo || emp.livro || '-')}</td>
+      <td>${escapeHtml(emp.data_emprestimo || '-')}</td>
+      <td>${escapeHtml(emp.data_devolucao_prevista || '-')}</td>
+      <td>${escapeHtml(emp.status)}</td>
       <td>${botoes.join(' ')}</td>
     `;
 
     if (podeAprovar) {
       linha.querySelector('[data-acao="aprovar"]').addEventListener('click', async () => {
-        const respostaAprovacao = await chamarApi(`/emprestimos/${emp.id}/aprovar-devolucao`, 'PUT');
+        const respostaAprovacao = await chamarApi(
+          `/emprestimos/${escapeHtml(emp.id)}/aprovar-devolucao`,
+          'PUT',
+        );
         if (!respostaAprovacao.ok) {
-          mostrarMensagem(respostaAprovacao.dados?.mensagem || 'Erro ao aprovar devolução.', 'erro');
+          mostrarMensagem(
+            respostaAprovacao.dados?.mensagem || 'Erro ao aprovar devolução.',
+            'erro',
+          );
           return;
         }
         mostrarMensagem('Devolução aprovada.', 'sucesso');
@@ -467,7 +514,7 @@ async function carregarEmprestimosBibliotecario() {
     linha.querySelector('[data-acao="excluir"]').addEventListener('click', async () => {
       if (!confirm('Excluir este empréstimo?')) return;
 
-      const respostaExclusao = await chamarApi(`/emprestimos/${emp.id}`, 'DELETE');
+      const respostaExclusao = await chamarApi(`/emprestimos/${escapeHtml(emp.id)}`, 'DELETE');
       if (!respostaExclusao.ok) {
         mostrarMensagem(respostaExclusao.dados?.mensagem || 'Erro ao excluir empréstimo.', 'erro');
         return;
@@ -481,8 +528,6 @@ async function carregarEmprestimosBibliotecario() {
     tabela.appendChild(linha);
   });
 }
-
-
 
 function inicializarLeitor() {
   const usuario = getUsuario();
@@ -520,11 +565,11 @@ async function carregarLivrosLeitor() {
     const disponivel = livro.quantidade_disponivel > 0;
 
     linha.innerHTML = `
-      <td>${livro.id}</td>
-      <td>${livro.titulo}</td>
-      <td>${livro.autor}</td>
-      <td>${livro.ano_publicacao ?? '-'}</td>
-      <td>${livro.quantidade_disponivel}</td>
+      <td>${escapeHtml(livro.id)}</td>
+      <td>${escapeHtml(livro.titulo)}</td>
+      <td>${escapeHtml(livro.autor)}</td>
+      <td>${escapeHtml(livro.ano_publicacao ?? '-')}</td>
+      <td>${escapeHtml(livro.quantidade_disponivel)}</td>
       <td>
         <button type="button" data-acao="solicitar" ${disponivel ? '' : 'disabled'}>
           ${disponivel ? 'Solicitar empréstimo' : 'Indisponível'}
@@ -581,10 +626,10 @@ async function carregarMeusEmprestimos() {
     const podeDevolver = emp.status === 'ativo' || emp.status === 'atrasado';
 
     linha.innerHTML = `
-      <td>${emp.livro_titulo || emp.livro || '-'}</td>
-      <td>${emp.data_emprestimo || '-'}</td>
-      <td>${emp.data_devolucao_prevista || '-'}</td>
-      <td>${emp.status}</td>
+      <td>${escapeHtml(emp.livro_titulo || emp.livro || '-')}</td>
+      <td>${escapeHtml(emp.data_emprestimo || '-')}</td>
+      <td>${escapeHtml(emp.data_devolucao_prevista || '-')}</td>
+      <td>${escapeHtml(emp.status)}</td>
       <td>${podeDevolver ? '<button type="button" data-acao="devolver">Solicitar devolução</button>' : '-'}</td>
     `;
 
@@ -592,9 +637,15 @@ async function carregarMeusEmprestimos() {
       linha.querySelector('[data-acao="devolver"]').addEventListener('click', async () => {
         if (!confirm('Solicitar devolução deste livro?')) return;
 
-        const respostaDevolucao = await chamarApi(`/emprestimos/${emp.id}/solicitar-devolucao`, 'PUT');
+        const respostaDevolucao = await chamarApi(
+          `/emprestimos/${escapeHtml(emp.id)}/solicitar-devolucao`,
+          'PUT',
+        );
         if (!respostaDevolucao.ok) {
-          mostrarMensagem(respostaDevolucao.dados?.mensagem || 'Erro ao solicitar devolução.', 'erro');
+          mostrarMensagem(
+            respostaDevolucao.dados?.mensagem || 'Erro ao solicitar devolução.',
+            'erro',
+          );
           return;
         }
 
